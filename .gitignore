@@ -5,3 +5,4 @@ outputs/
 __pycache__/
 *.bin
 *.safetensors
+venv

@@ -70,12 +70,24 @@ Note: only change the base model and add the LoRA modules for better stylization
   <img src="https://cdn-uploads.huggingface.co/production/uploads/6285a9133ab6642179158944/-AC7Hr5YL4yW1zXGe_Izl.jpeg" height=450>
 </p>
 
-# 🔧 Dependencies and Installation
+# 🔧 Dependencies and Installation Generic
 
 - Python >= 3.8 (Recommend to use [Anaconda](https://www.anaconda.com/download/#linux) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
 - [PyTorch >= 2.0.0](https://pytorch.org/)
 ```bash
 pip install -r requirements.txt
+```
+
+# 🔧 Dependencies and Installation Windows
+
+- Python >= 3.8 (Recommend to use [Anaconda](https://www.anaconda.com/download/#linux) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
+- [PyTorch >= 2.0.0](https://pytorch.org/)
+```pwsh
+python -m venv venv
+.\venv\Scripts\activate
+pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements-windows.txt
+.\gui.bat
 ```
 
 # ⏬ Download Models 
