@@ -42,7 +42,7 @@ pipe.scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config)
 pipe.fuse_lora()
 
 # @spaces.GPU(enable_queue=True)
-def generate_image(upload_images, prompt, negative_prompt, style_name, num_steps, style_strength_ratio, num_outputs, guidance_scale, seed, progress=gr.Progress(track_tqdm=True)):
+def generate_image(upload_images, prompt, negative_prompt, style_name, num_steps, style_strength_ratio, num_outputs, guidance_scale, width, height, seed, progress=gr.Progress(track_tqdm=True)):
     # check the trigger word
     image_token_id = pipe.tokenizer.convert_tokens_to_ids(pipe.trigger_word)
     input_ids = pipe.tokenizer.encode(prompt)
@@ -79,6 +79,8 @@ def generate_image(upload_images, prompt, negative_prompt, style_name, num_steps
         start_merge_step=start_merge_step,
         generator=generator,
         guidance_scale=guidance_scale,
+        height=height,
+        width=width
     ).images
     return images, gr.update(visible=True)
 
@@ -250,6 +252,20 @@ with gr.Blocks(css=css) as demo:
                     value=0,
                 )
                 randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
+                width = gr.Slider(
+                    label="Width",
+                    minimum=512,
+                    maximum=2048,
+                    step=64,
+                    value=1024,
+                )
+                height = gr.Slider(
+                    label="Height",
+                    minimum=512,
+                    maximum=2048,
+                    step=64,
+                    value=1024,
+                )
         with gr.Column():
             gallery = gr.Gallery(label="Generated Images")
             usage_tips = gr.Markdown(label="Usage tips of PhotoMaker", value=tips ,visible=False)
@@ -268,7 +284,7 @@ with gr.Blocks(css=css) as demo:
             api_name=False,
         ).then(
             fn=generate_image,
-            inputs=[files, prompt, negative_prompt, style, num_steps, style_strength_ratio, num_outputs, guidance_scale, seed],
+            inputs=[files, prompt, negative_prompt, style, num_steps, style_strength_ratio, num_outputs, guidance_scale, width, height, seed],
             outputs=[gallery, usage_tips]
         )
 
