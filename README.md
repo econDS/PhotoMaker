@@ -79,9 +79,19 @@ pip install -r requirements.txt
 ```
 
 # 🔧 Dependencies and Installation Windows
+## Windows Pre-requirements
 
-- Python >= 3.8 (Recommend to use [Anaconda](https://www.anaconda.com/download/#linux) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
-- [PyTorch >= 2.0.0](https://pytorch.org/)
+To install the necessary dependencies on a Windows system, follow these steps:
+
+1. Install [Python 3.10](https://www.python.org/ftp/python/3.10.9/python-3.10.9-amd64.exe).
+   - During the installation process, ensure that you select the option to add Python to the 'PATH' environment variable.
+
+2. Install [Git](https://git-scm.com/download/win).
+
+3. Install the [Visual Studio 2015, 2017, 2019, and 2022 redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+
+## Setup
+
 ```pwsh
 git clone https://github.com/bmaltais/PhotoMaker.git
 cd PhotoMaker
