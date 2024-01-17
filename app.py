@@ -127,6 +127,15 @@ def get_example():
     ]
     return case
 
+def calculate_ratio(value):
+    max_value = 1024 * 1024
+    other_value = max_value / value
+
+    # Round to nearest multiple of 32
+    other_value_rounded = round(other_value / 32) * 32
+
+    return gr.update(value=other_value_rounded)
+
 ### Description and style
 logo = r"""
 <center><img src='https://photo-maker.github.io/assets/logo.png' alt='PhotoMaker logo' style="width:80px; margin-bottom:10px"></center>
@@ -256,19 +265,22 @@ with gr.Blocks(css=css) as demo:
                     label="Width",
                     minimum=512,
                     maximum=2048,
-                    step=64,
+                    step=32,
                     value=1024,
                 )
                 height = gr.Slider(
                     label="Height",
                     minimum=512,
                     maximum=2048,
-                    step=64,
+                    step=32,
                     value=1024,
                 )
         with gr.Column():
             gallery = gr.Gallery(label="Generated Images")
-            usage_tips = gr.Markdown(label="Usage tips of PhotoMaker", value=tips ,visible=False)
+            usage_tips = gr.Markdown(label="Usage tips of PhotoMaker", value=tips, visible=False)
+            
+        width.release(fn=calculate_ratio, inputs=[width], outputs=[height])
+        height.release(fn=calculate_ratio, inputs=[height], outputs=[width])
 
         files.upload(fn=swap_to_gallery, inputs=files, outputs=[uploaded_files, clear_button, files])
         remove_and_reupload.click(fn=remove_back_to_files, outputs=[uploaded_files, clear_button, files])
