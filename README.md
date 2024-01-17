@@ -83,6 +83,8 @@ pip install -r requirements.txt
 - Python >= 3.8 (Recommend to use [Anaconda](https://www.anaconda.com/download/#linux) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
 - [PyTorch >= 2.0.0](https://pytorch.org/)
 ```pwsh
+https://github.com/bmaltais/PhotoMaker.git
+cd PhotoMaker
 python -m venv venv
 .\venv\Scripts\activate
 pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --index-url https://download.pytorch.org/whl/cu118
