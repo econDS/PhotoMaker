@@ -11,6 +11,7 @@ call .\venv\Scripts\activate.bat
 set PATH=%PATH%;%~dp0venv\Lib\site-packages\torch\lib
 
 :: Upgrade if needed
+python.exe -m pip install --upgrade pip
 pip install -U -r requirements-windows.txt
 
 :: If the exit code is 0, run the kohya_gui.py script with the command-line arguments
