@@ -237,3 +237,9 @@ If you find PhotoMaker useful for your research and applications, please cite us
   booktitle={arXiv preprint arxiv:2312.04461},
   year={2023}
 }
+```
+
+# Changelog
+* v1.0.1
+  - Bring latest upstream code update to repo
+  - Add setup for Photomaker module

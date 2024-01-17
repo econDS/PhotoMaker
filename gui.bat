@@ -10,14 +10,17 @@ call .\venv\Scripts\deactivate.bat
 call .\venv\Scripts\activate.bat
 set PATH=%PATH%;%~dp0venv\Lib\site-packages\torch\lib
 
+:: Upgrade if needed
+pip install -U -r requirements-windows.txt
+
 :: If the exit code is 0, run the kohya_gui.py script with the command-line arguments
 if %errorlevel% equ 0 (
     REM Check if the batch was started via double-click
     IF /i "%comspec% /c %~0 " equ "%cmdcmdline:"=%" (
         REM echo This script was started by double clicking.
-        cmd /k python app.py %*
+        cmd /k python gradio_demo/app.py %*
     ) ELSE (
         REM echo This script was started from a command prompt.
-        python app.py %*
+        python gradio_demo/app.py %*
     )
 )

@@ -7,7 +7,7 @@ from diffusers.utils import load_image
 from diffusers import EulerDiscreteScheduler
 
 from huggingface_hub import hf_hub_download
-import spaces
+# import spaces
 import gradio as gr
 
 from photomaker import PhotoMakerStableDiffusionXLPipeline
@@ -28,7 +28,6 @@ pipe = PhotoMakerStableDiffusionXLPipeline.from_pretrained(
     torch_dtype=torch.bfloat16, 
     use_safetensors=True, 
     variant="fp16",
-    # local_files_only=True,
 ).to(device)
 
 pipe.load_photomaker_adapter(
@@ -36,15 +35,14 @@ pipe.load_photomaker_adapter(
     subfolder="",
     weight_name=os.path.basename(photomaker_ckpt),
     trigger_word="img"
-)
-pipe.id_encoder.to(device)
+)     
 
 pipe.scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config)
 # pipe.set_adapters(["photomaker"], adapter_weights=[1.0])
 pipe.fuse_lora()
 
-@spaces.GPU(enable_queue=True)
-def generate_image(upload_images, prompt, negative_prompt, style_name, num_steps, style_strength_ratio, num_outputs, guidance_scale, seed, progress=gr.Progress(track_tqdm=True)):
+# @spaces.GPU(enable_queue=True)
+def generate_image(upload_images, prompt, negative_prompt, style_name, num_steps, style_strength_ratio, num_outputs, guidance_scale, width, height, seed, progress=gr.Progress(track_tqdm=True)):
     # check the trigger word
     image_token_id = pipe.tokenizer.convert_tokens_to_ids(pipe.trigger_word)
     input_ids = pipe.tokenizer.encode(prompt)
@@ -81,6 +79,8 @@ def generate_image(upload_images, prompt, negative_prompt, style_name, num_steps
         start_merge_step=start_merge_step,
         generator=generator,
         guidance_scale=guidance_scale,
+        height=height,
+        width=width
     ).images
     return images, gr.update(visible=True)
 
@@ -126,6 +126,15 @@ def get_example():
         ],
     ]
     return case
+
+def calculate_ratio(value):
+    max_value = 1024 * 1024
+    other_value = max_value / value
+
+    # Round to nearest multiple of 32
+    other_value_rounded = round(other_value / 32) * 32
+
+    return gr.update(value=other_value_rounded)
 
 ### Description and style
 logo = r"""
@@ -252,9 +261,26 @@ with gr.Blocks(css=css) as demo:
                     value=0,
                 )
                 randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
+                width = gr.Slider(
+                    label="Width",
+                    minimum=512,
+                    maximum=2048,
+                    step=32,
+                    value=1024,
+                )
+                height = gr.Slider(
+                    label="Height",
+                    minimum=512,
+                    maximum=2048,
+                    step=32,
+                    value=1024,
+                )
         with gr.Column():
             gallery = gr.Gallery(label="Generated Images")
-            usage_tips = gr.Markdown(label="Usage tips of PhotoMaker", value=tips ,visible=False)
+            usage_tips = gr.Markdown(label="Usage tips of PhotoMaker", value=tips, visible=False)
+            
+        width.release(fn=calculate_ratio, inputs=[width], outputs=[height])
+        height.release(fn=calculate_ratio, inputs=[height], outputs=[width])
 
         files.upload(fn=swap_to_gallery, inputs=files, outputs=[uploaded_files, clear_button, files])
         remove_and_reupload.click(fn=remove_back_to_files, outputs=[uploaded_files, clear_button, files])
@@ -270,7 +296,7 @@ with gr.Blocks(css=css) as demo:
             api_name=False,
         ).then(
             fn=generate_image,
-            inputs=[files, prompt, negative_prompt, style, num_steps, style_strength_ratio, num_outputs, guidance_scale, seed],
+            inputs=[files, prompt, negative_prompt, style, num_steps, style_strength_ratio, num_outputs, guidance_scale, width, height, seed],
             outputs=[gallery, usage_tips]
         )
 
@@ -284,4 +310,4 @@ with gr.Blocks(css=css) as demo:
     
     gr.Markdown(article)
     
-demo.launch(share=False)
+demo.launch()
