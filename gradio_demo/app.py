@@ -36,7 +36,7 @@ photomaker_ckpt = hf_hub_download(repo_id="TencentARC/PhotoMaker", filename="pho
 if device == "mps":
     torch_dtype = torch.float16
 else:
-    torch_dtype = torch.bfloat16
+    torch_dtype = torch.float16
 pipe = PhotoMakerStableDiffusionXLPipeline.from_pretrained(
     base_model_path, 
     torch_dtype=torch_dtype,
