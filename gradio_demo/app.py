@@ -37,7 +37,6 @@ DEFAULT_STYLE_NAME = "Photographic (Default)"
 # download PhotoMaker checkpoint to cache
 photomaker_ckpt = hf_hub_download(repo_id="TencentARC/PhotoMaker", filename="photomaker-v1.bin", repo_type="model")
 
-# RuntimeWarning: invalid value encountered in cast images = (images * 255).round().astype("uint8")
 
 if gpu_name == "NVIDIA GeForce GTX 1660":
     # Error running float16 in GTX 1660 [https://github.com/huggingface/diffusers/issues/2153]
