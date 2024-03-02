@@ -3,11 +3,14 @@ import numpy as np
 import random
 import os
 import sys
+import gc
 
 from diffusers.utils import load_image
 from diffusers import EulerDiscreteScheduler
 
 from huggingface_hub import hf_hub_download
+
+from datetime import datetime
 
 # import spaces
 import gradio as gr
@@ -29,6 +32,8 @@ try:
         device = "cpu"
 except:
     device = "cpu"
+
+print(f"device: {device}")
 
 MAX_SEED = np.iinfo(np.int32).max
 STYLE_NAMES = list(styles.keys())
@@ -97,6 +102,9 @@ def generate_image(
 
     generator = torch.Generator(device=device).manual_seed(seed)
 
+    start_time = datetime.now()
+    print(f"start at {start_time}")
+
     print("Start inference...")
     print(f"[Debug] Prompt: {prompt}, \n[Debug] Neg Prompt: {negative_prompt}")
     start_merge_step = int(float(style_strength_ratio) / 100 * num_steps)
@@ -115,6 +123,17 @@ def generate_image(
         height=height,
         width=width,
     ).images
+
+    end_time = datetime.now()
+    print(f"end at {end_time}")
+    duration = end_time - start_time
+    duration_min = round(duration.seconds / 60, 2)
+    print(f"it took {duration_min} minutes\n")
+
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    gc.collect()
+
     return images, gr.update(visible=True)
 
 
@@ -265,7 +284,7 @@ with gr.Blocks(css=css) as demo:
                 negative_prompt = gr.Textbox(
                     label="Negative Prompt",
                     placeholder="low quality",
-                    value="nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry",
+                    value="drawing, painting, crayon, sketch, graphite, impressionist, noisy, blurry, soft, deformed, ugly lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry",
                 )
                 num_steps = gr.Slider(
                     label="Number of sample steps",
@@ -286,7 +305,7 @@ with gr.Blocks(css=css) as demo:
                     minimum=1,
                     maximum=4,
                     step=1,
-                    value=2,
+                    value=3,
                 )
                 guidance_scale = gr.Slider(
                     label="Guidance scale",
